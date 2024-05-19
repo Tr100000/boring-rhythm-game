@@ -7,15 +7,17 @@
     "dev": "vite",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
-    "test": "prettier '**/*' --check --ignore-unknown"
+    "test": "prettier . --check"
   },
   "dependencies": {
     "@tonejs/midi": "^2.0.28",
+    "fscreen": "^1.2.0",
     "pinia": "^2.1.7",
     "tone": "^15.0.4",
     "vue": "^3.4.27"
   },
   "devDependencies": {
+    "@types/fscreen": "^1.0.4",
     "@vitejs/plugin-vue": "^5.0.4",
     "prettier": "^3.2.5",
     "typescript": "^5.4.5",

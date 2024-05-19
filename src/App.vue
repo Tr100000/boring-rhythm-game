@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Game from "./screens/Game.vue";
+import Game from "./game/Game.vue";
 import LoadScreen from "./screens/LoadScreen.vue";
 import MainMenu from "./screens/MainMenu.vue";
 import { useScreenStore } from "./stores/screen";

@@ -4,9 +4,7 @@ import { LoadTask, createLoadTasks } from "../load";
 import { useScreenStore } from "../stores/screen";
 
 const screenStore = useScreenStore();
-const tasks = ref<LoadTask<any>[]>(
-  createLoadTasks(onLoadFinished),
-);
+const tasks = ref<LoadTask<any>[]>(createLoadTasks(onLoadFinished));
 const startTime = ref<number>(Date.now());
 
 const currentState = computed(() => {

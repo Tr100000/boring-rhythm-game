@@ -14,7 +14,6 @@ export class LoadTask<T> implements PromiseLike<T> {
     this.promise = promise;
     promise
       .then((value) => {
-        console.log("DONE");
         this.result = value;
         this.status.value = "success";
       })
@@ -43,12 +42,16 @@ export class LoadTask<T> implements PromiseLike<T> {
   }
 }
 
-export function loadAudio(url: string): Promise<Tone.ToneAudioBuffer> {
+export function loadAudio(
+  url: string,
+  loadedUrl: string = url,
+): Promise<Tone.ToneAudioBuffer> {
   return new Promise((resolve) => {
     new Tone.ToneAudioBuffer(url, (buffer) => {
-      loadedAudio.set(url, buffer);
+      loadedAudio.set(loadedUrl, buffer);
       resolve(buffer);
     });
+    new Tone.Sampler()
   });
 }
 
@@ -57,9 +60,13 @@ export function createLoadTasks(
   onLoadError?: (reason: any) => void,
 ) {
   const tasks: LoadTask<any>[] = [];
-
-  tasks.push(new LoadTask(loadAudio("/audio/metronome_high.ogg")));
-  tasks.push(new LoadTask(loadAudio("/audio/metronome_low.ogg")));
+  tasks.push(
+    new LoadTask(loadAudio("/audio/metronome_high.ogg")),
+    new LoadTask(loadAudio("/audio/metronome_low.ogg")),
+    new LoadTask(loadAudio("/audio/metronome_high_alt.ogg")),
+    new LoadTask(loadAudio("/audio/metronome_low_alt.ogg")),
+    new LoadTask(loadAudio("/audio/clap.ogg")),
+  );
   tasks.push(new LoadTask(Tone.start()));
 
   Promise.all(tasks).then(onLoadFinished, onLoadError);
