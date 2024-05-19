@@ -11,4 +11,4 @@ export const useScreenStore = defineStore("screen", () => {
   return { currentScreen, setScreen };
 });
 
-type Screen = "menu" | "load" | "play";
+type Screen = "menu" | "load" | "game";
