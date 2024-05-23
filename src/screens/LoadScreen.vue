@@ -52,7 +52,7 @@ function onLoadFinished() {
 
 <style scoped>
 #root {
-  width: 80vw;
+  width: min(80vw, 900px);
 }
 
 #progress {

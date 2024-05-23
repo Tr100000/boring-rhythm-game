@@ -12,12 +12,18 @@ async function load() {
 
 <template>
   <div>
+    <h1>Boring Rhythm Game</h1>
     <button @click="load">Play</button>
   </div>
 </template>
 
 <style scoped>
 h1 {
-  margin-bottom: 1rem;
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
+button {
+  font-size: 1.2em;
 }
 </style>

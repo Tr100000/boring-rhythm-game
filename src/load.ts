@@ -51,7 +51,6 @@ export function loadAudio(
       loadedAudio.set(loadedUrl, buffer);
       resolve(buffer);
     });
-    new Tone.Sampler()
   });
 }
 
@@ -65,9 +64,12 @@ export function createLoadTasks(
     new LoadTask(loadAudio("/audio/metronome_low.ogg")),
     new LoadTask(loadAudio("/audio/metronome_high_alt.ogg")),
     new LoadTask(loadAudio("/audio/metronome_low_alt.ogg")),
+    new LoadTask(loadAudio("/audio/beat.ogg")),
     new LoadTask(loadAudio("/audio/clap.ogg")),
   );
   tasks.push(new LoadTask(Tone.start()));
+
+  //tasks.forEach((task) => task.then(() => console.log(tasks.indexOf(task))));
 
   Promise.all(tasks).then(onLoadFinished, onLoadError);
 

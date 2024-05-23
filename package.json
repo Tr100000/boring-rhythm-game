@@ -1,5 +1,5 @@
 {
-  "name": "rhythm-game-thing",
+  "name": "boring-rhythm-game",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,7 +10,6 @@
     "test": "prettier . --check"
   },
   "dependencies": {
-    "@tonejs/midi": "^2.0.28",
     "fscreen": "^1.2.0",
     "pinia": "^2.1.7",
     "tone": "^15.0.4",
