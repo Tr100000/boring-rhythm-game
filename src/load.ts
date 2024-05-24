@@ -4,13 +4,12 @@ import { ref } from "vue";
 export const loadedAudio = new Map<string, Tone.ToneAudioBuffer>();
 
 export class LoadTask<T> implements PromiseLike<T> {
-  promise;
   status = ref<"waiting" | "success" | "error">("waiting");
 
   result: T | undefined;
   error: any;
 
-  constructor(promise: Promise<T>) {
+  constructor(public promise: Promise<T>) {
     this.promise = promise;
     promise
       .then((value) => {

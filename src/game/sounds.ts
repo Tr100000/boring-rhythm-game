@@ -32,7 +32,7 @@ export let clapSoundPlayer: SoundPlayer;
 export function setupClap() {
   clapSoundPlayer = new SoundPlayer(loadedAudio.get("/audio/clap.ogg"));
 
-  document.addEventListener("pointerdown", clapSoundPlayer.play);
+  document.addEventListener("pointerdown", () => clapSoundPlayer.play());
   document.addEventListener("keydown", (e) => {
     if (!(e.repeat || e.altKey || e.ctrlKey || e.shiftKey)) {
       clapSoundPlayer.play();
@@ -41,10 +41,9 @@ export function setupClap() {
 }
 
 class SoundPlayer {
-  url;
   players: Tone.Player[] = [];
 
-  constructor(url?: string | AudioBuffer | Tone.ToneAudioBuffer) {
+  constructor(public url?: string | AudioBuffer | Tone.ToneAudioBuffer) {
     this.url = url;
     this.addPlayer();
   }

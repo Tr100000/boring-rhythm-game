@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { useScreenStore } from "../stores/screen";
-import fscreen from "fscreen";
 
 const store = useScreenStore();
 
 async function load() {
-  fscreen.requestFullscreen(document.documentElement);
   store.setScreen("load");
 }
 </script>
