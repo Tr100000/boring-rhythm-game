@@ -11,6 +11,7 @@ const startTime = ref<number>(Date.now());
 const errorDialog = ref<HTMLDialogElement>();
 
 const currentState = computed(() => {
+  if (!tasks.value) return "waiting";
   if (tasks.value.every((task) => task.status == "success")) {
     return "success";
   } else if (tasks.value.some((task) => task.status == "error")) {
@@ -20,21 +21,16 @@ const currentState = computed(() => {
   }
 });
 const progress = computed(() => {
+  if (!tasks.value) return 0;
   return (
     tasks.value.filter((task) => task.status == "success").length /
     tasks.value.length
   );
 });
-const progressStyle = computed(() => {
-  const style: StyleValue = {};
-  style.width = progress.value * 100 + "%";
-  if (currentState.value == "error") {
-    style.backgroundColor = "red";
-  } else if (currentState.value == "success") {
-    style.backgroundColor = "green";
-  }
-  return style;
+const progressStyle = computed<StyleValue>(() => {
+  return { width: progress.value * 100 + "%" };
 });
+const progressClass = computed(() => `progress-${currentState.value}`);
 
 function onLoadFinished() {
   const delta = Date.now() - startTime.value;
@@ -45,6 +41,7 @@ function onLoadFinished() {
 }
 
 function onLoadError(reason: any) {
+  console.error(reason);
   errorDialog.value!.showModal();
   errorDialog.value!.querySelector("p")!.innerHTML = reason;
 }
@@ -57,7 +54,11 @@ function reload() {
 <template>
   <div id="root">
     <div id="progress">
-      <div id="progressInner" :style="progressStyle"></div>
+      <div
+        id="progressInner"
+        :style="progressStyle"
+        :class="progressClass"
+      ></div>
     </div>
     <dialog ref="errorDialog">
       <p></p>
@@ -82,35 +83,18 @@ function reload() {
   height: 100%;
   border-radius: inherit;
   transition: width 100ms ease-out;
-  background-color: rgb(16, 110, 204);
+  background-color: #106ecc;
+}
+#progressInner.progress-success {
+  background-color: green;
+}
+#progressInner.progress-error {
+  background-color: red;
 }
 
-dialog[open] {
-  opacity: 1;
-  transform: scale(1);
-
-  ::backdrop {
-    background-color: (0 0 0 / 25%);
-
-    @starting-style {
-      background-color: transparent;
-    }
-  }
-
-  @starting-style {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-}
-
-dialog {
-  opacity: 0;
-  transform: scale(0.95);
-  transition: all 200ms ease-out allow-discrete;
-
-  ::backdrop {
-    background-color: transparent;
-    transition: all 200ms ease-out allow-discrete;
+@media (prefers-color-scheme: light) {
+  #progressInner.progress-success {
+    background-color: limegreen;
   }
 }
 </style>

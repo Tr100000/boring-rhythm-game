@@ -1,7 +1,9 @@
 import * as Tone from "tone";
 import { ref } from "vue";
+import { PhraseData, PhraseJson } from "./phrase";
 
 export const loadedAudio = new Map<string, Tone.ToneAudioBuffer>();
+export const loadedPhrases: PhraseData[] = [];
 
 export class LoadTask<T> implements PromiseLike<T> {
   status = ref<"waiting" | "success" | "error">("waiting");
@@ -36,41 +38,113 @@ export class LoadTask<T> implements PromiseLike<T> {
     return this.promise.then(onfulfilled, onrejected);
   }
 
+  onFulfilled(callback: (value: T) => void): this {
+    this.then(callback);
+    return this;
+  }
+
   public getProgressValue(): number {
     return +(this.status.value == "success");
   }
 }
 
+export class GroupLoadTask<T> extends LoadTask<T[]> {
+  constructor(public childTasks: LoadTask<T>[]) {
+    super(Promise.all(childTasks));
+  }
+
+  public getProgressValue(): number {
+    return (
+      this.childTasks.filter((task) => task.status.value == "success").length /
+      this.childTasks.length
+    );
+  }
+}
+
+function processUrl(url: string) {
+  return URL.canParse(url) || import.meta.env.DEV
+    ? url
+    : "/boring-rhythm-game" + url;
+}
+
 export function loadAudio(
   url: string,
-  loadedUrl: string = url,
-): Promise<Tone.ToneAudioBuffer> {
-  return new Promise((resolve) => {
-    new Tone.ToneAudioBuffer(url, (buffer) => {
-      loadedAudio.set(loadedUrl, buffer);
-      resolve(buffer);
-    });
-  });
+  name: string,
+): LoadTask<Tone.ToneAudioBuffer> {
+  return new LoadTask(
+    new Promise((resolve) => {
+      new Tone.ToneAudioBuffer(processUrl(url), (buffer) => {
+        loadedAudio.set(name, buffer);
+        resolve(buffer);
+      });
+    }),
+  );
+}
+
+export function fileLoadTask(url: string): LoadTask<string> {
+  return new LoadTask(
+    new Promise((resolve) => {
+      fetch(processUrl(url)).then((r) => r.text().then(resolve));
+    }),
+  );
+}
+
+export function fileLoadTaskWithProcessing(
+  url: string,
+  processFunction: (value: string) => void,
+): LoadTask<string> {
+  return new LoadTask(
+    new Promise((resolve) => {
+      fetch(processUrl(url)).then((r) =>
+        r.text().then((value) => {
+          processFunction(value);
+          resolve(value);
+        }),
+      );
+    }),
+  );
+}
+
+export function loadAllPhrases(): LoadTask<string>[] {
+  const phraseCount = 6;
+  const tasks: LoadTask<string>[] = [];
+  for (let i = 1; i <= phraseCount; i++) {
+    loadedPhrases[i] = new PhraseData();
+    tasks.push(
+      fileLoadTaskWithProcessing(`/phrases/${i}.json`, (value) => {
+        const json = JSON.parse(value) as PhraseJson;
+        loadedPhrases[i].notes = json.notes.map((note) => note / 2);
+      }),
+      fileLoadTaskWithProcessing(`/phrases/${i}.svg`, (value) => {
+        loadedPhrases[i].svg = value;
+      }),
+    );
+  }
+  return tasks;
 }
 
 export function createLoadTasks(
   onLoadFinished?: (value: any[]) => void,
   onLoadError?: (reason: any) => void,
 ) {
-  const tasks: LoadTask<any>[] = [];
-  tasks.push(
-    new LoadTask(loadAudio("/audio/metronome_high.ogg")),
-    new LoadTask(loadAudio("/audio/metronome_low.ogg")),
-    new LoadTask(loadAudio("/audio/metronome_high_alt.ogg")),
-    new LoadTask(loadAudio("/audio/metronome_low_alt.ogg")),
-    new LoadTask(loadAudio("/audio/beat.ogg")),
-    new LoadTask(loadAudio("/audio/clap.ogg")),
-  );
-  tasks.push(new LoadTask(Tone.start()));
+  try {
+    const tasks: LoadTask<any>[] = [
+      new GroupLoadTask([
+        loadAudio("/audio/metronome_high.ogg", "metronome_high"),
+        loadAudio("/audio/metronome_low.ogg", "metronome_low"),
+        loadAudio("https://tonejs.github.io/audio/berklee/conga_4.mp3", "beat"),
+        loadAudio("/audio/clap.ogg", "clap"),
+      ]),
+      new GroupLoadTask(loadAllPhrases()),
+      new LoadTask(Tone.start()),
+    ];
 
-  //tasks.forEach((task) => task.then(() => console.log(tasks.indexOf(task))));
-
-  Promise.all(tasks).then(onLoadFinished, onLoadError);
-
-  return tasks;
+    Promise.all(tasks).then(onLoadFinished, onLoadError);
+    return tasks;
+  } catch (e: any) {
+    if (onLoadError) {
+      onLoadError(e);
+    }
+    return [];
+  }
 }
