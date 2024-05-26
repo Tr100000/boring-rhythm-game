@@ -1,17 +1,23 @@
 <script setup lang="ts">
+import { Mode, useModeStore } from "../stores/mode";
 import { useScreenStore } from "../stores/screen";
 
-const store = useScreenStore();
+const showExtraModes = import.meta.env.DEV;
 
-async function load() {
-  store.setScreen("load");
+const screenStore = useScreenStore();
+const modeStore = useModeStore();
+
+async function load(mode: Mode) {
+  screenStore.setScreen("load");
+  modeStore.setMode(mode);
 }
 </script>
 
 <template>
   <div>
     <h1>Boring Rhythm Game</h1>
-    <button @click="load">Play</button>
+    <button @click="load('play')">Play</button>
+    <button v-if="showExtraModes" @click="load('view')">View</button>
   </div>
 </template>
 
@@ -23,5 +29,6 @@ h1 {
 
 button {
   font-size: 1.2em;
+  margin: 4px;
 }
 </style>

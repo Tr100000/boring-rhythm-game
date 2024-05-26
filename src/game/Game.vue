@@ -30,15 +30,14 @@ function phraseChangeCallback(value: string) {
   phrase.value!.innerHTML = value;
 }
 
-function noteHighlightCallback(noteIndex: number) {
+function noteHighlightCallback(noteIndex: number, highlight: boolean) {
   const notes = phrase.value!.querySelectorAll(".Note");
-  notes.forEach((note, i) => {
-    if (i == noteIndex) {
-      note.classList.add("highlighted-note");
-    } else {
-      note.classList.remove("highlighted-note");
-    }
-  });
+  const note = notes[noteIndex];
+  if (highlight) {
+    note.classList.add("highlighted-note");
+  } else {
+    note.classList.remove("highlighted-note");
+  }
 }
 </script>
 

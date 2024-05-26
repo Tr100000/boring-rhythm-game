@@ -47,7 +47,7 @@ export function setupClap() {
 
 export function scheduleAllPhrases(
   domCallback: (svg: string) => void,
-  noteHighlightDomCallback: (noteIndex: number) => void,
+  noteHighlightDomCallback: (noteIndex: number, highlight: boolean) => void,
 ) {
   loadedPhrases.forEach((_phrase, i) => {
     const time = `${(i - 1) * 2}:0`;
@@ -60,13 +60,14 @@ export function schedulePhrase(
   index: number,
   time: Tone.Unit.Time,
   domCallback: (svg: string) => void,
-  noteHighlightDomCallback: (noteIndex: number) => void,
+  noteHighlightDomCallback: (noteIndex: number, highlight: boolean) => void,
+  scheduleRepeat = true,
 ) {
   const phrase = loadedPhrases[index];
 
   phrase.scheduleNotes(time);
   phrase.scheduleNoteHighlights(time, noteHighlightDomCallback);
-  scheduleMetronome(time, 8);
+  scheduleMetronome(time, 4 * (+scheduleRepeat + 1));
   Tone.getTransport().schedule((time) => {
     Tone.getDraw().schedule(() => domCallback(phrase.svg), time);
   }, time);

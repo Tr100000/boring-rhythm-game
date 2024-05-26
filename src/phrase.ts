@@ -2,24 +2,28 @@ import * as Tone from "tone";
 import { beatSoundPlayer } from "./sounds";
 
 export class PhraseData {
-  notes!: number[];
+  notes!: Note[];
   svg!: string;
 
   scheduleNotes(time: Tone.Unit.Time) {
     Tone.getTransport().schedule((time) => {
-      this.notes.forEach((note) => beatSoundPlayer.start(time + note));
+      this.notes.forEach((note) => beatSoundPlayer.start(time + note.start));
     }, time);
   }
 
   scheduleNoteHighlights(
     time: Tone.Unit.Time,
-    domCallback: (noteIndex: number) => void,
+    domCallback: (noteIndex: number, highlight: boolean) => void,
   ) {
     Tone.getTransport().schedule((time) => {
-      [...this.notes, 2].forEach((note, i) => {
+      this.notes.forEach((note, i) => {
         Tone.getDraw().schedule(
-          () => domCallback(this.notes.indexOf(note)),
-          time + note + Tone.Time(0.01).valueOf() * +!i,
+          () => domCallback(this.notes.indexOf(note), true),
+          time + note.start + Tone.Time(0.01).valueOf() * +!i,
+        );
+        Tone.getDraw().schedule(
+          () => domCallback(this.notes.indexOf(note), false),
+          time + note.end,
         );
       });
     }, time);
@@ -28,5 +32,6 @@ export class PhraseData {
 
 export class PhraseJson {
   timeSignature?: number[];
-  notes!: number[];
+  notes!: (Note | number)[];
 }
+export type Note = { start: number; end: number };
