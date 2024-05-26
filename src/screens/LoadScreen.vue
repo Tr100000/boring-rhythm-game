@@ -84,14 +84,14 @@ function reload() {
   border-radius: inherit;
   transition: width 100ms ease-out;
   background-color: #106ecc;
-}
-#progressInner.progress-success {
-  background-color: green;
-}
-#progressInner.progress-error {
-  background-color: red;
-}
 
+  &.progress-success {
+    background-color: green;
+  }
+  &.progress-error {
+    background-color: red;
+  }
+}
 @media (prefers-color-scheme: light) {
   #progressInner.progress-success {
     background-color: limegreen;

@@ -1,6 +1,6 @@
 import * as Tone from "tone";
 import { ref } from "vue";
-import { Note, PhraseData, PhraseJson } from "./phrase";
+import { Note, PhraseData, PhraseJson, phraseCount } from "./phrase";
 
 export const loadedAudio = new Map<string, Tone.ToneAudioBuffer>();
 export const loadedPhrases: PhraseData[] = [];
@@ -106,7 +106,6 @@ export function fileLoadTaskWithProcessing(
 }
 
 export function loadAllPhrases(): LoadTask<string>[] {
-  const phraseCount = 6;
   const tasks: LoadTask<string>[] = [];
   for (let i = 1; i <= phraseCount; i++) {
     loadedPhrases[i] = new PhraseData();
@@ -129,7 +128,6 @@ export function loadAllPhrases(): LoadTask<string>[] {
             return { start: note.start / 2, end: note.end / 2 };
           }
         });
-        console.log(i, loadedPhrases[i]);
       }),
       fileLoadTaskWithProcessing(`/phrases/${i}.svg`, (value) => {
         loadedPhrases[i].svg = value;

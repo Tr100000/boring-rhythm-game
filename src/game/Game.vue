@@ -7,19 +7,30 @@ import {
   setupClap,
   setupMetronome,
 } from "../sounds";
+import { initTiming, score, text } from "../timing";
+import Phrase from "./Phrase.vue";
+import ScoreText from "./ScoreText.vue";
 
 const audioStarted = ref<boolean>(false);
-const phrase = ref<HTMLDivElement>();
+const phrase = ref<InstanceType<typeof Phrase>>();
+const scoreDialog = ref<HTMLDialogElement>();
 
 function start() {
   setupMetronome();
   setupBeat();
   setupClap();
 
+  initTiming();
   scheduleAllPhrases(phraseChangeCallback, noteHighlightCallback);
 
   Tone.getTransport().start("+0.1");
   audioStarted.value = true;
+
+  Tone.getTransport().schedule((time) => {
+    Tone.getDraw().schedule(() => {
+      scoreDialog.value!.showModal();
+    }, time);
+  }, "12:2");
 }
 
 onMounted(() => {
@@ -27,7 +38,7 @@ onMounted(() => {
 });
 
 function phraseChangeCallback(value: string) {
-  phrase.value!.innerHTML = value;
+  phrase.value!.setInnerHTML(value);
 }
 
 function noteHighlightCallback(noteIndex: number, highlight: boolean) {
@@ -42,25 +53,20 @@ function noteHighlightCallback(noteIndex: number, highlight: boolean) {
 </script>
 
 <template>
-  <div ref="phrase" id="phrase"></div>
+  <Phrase ref="phrase" />
+  <div id="text">
+    <ScoreText v-for="t in text" :text="t" />
+  </div>
+  <dialog ref="scoreDialog">
+    <p>Score: {{ score }}</p>
+  </dialog>
 </template>
 
 <style scoped>
-#phrase {
-  width: 80vw;
-  max-width: 100%;
-  height: 80vh;
-  max-height: 100%;
-}
-
-div {
-  fill: var(--color);
-}
-</style>
-
-<style>
-.highlighted-note {
-  fill: blue;
-  color: blue;
+#text {
+  position: fixed;
+  transform: translateY(-80px);
+  display: flex;
+  justify-content: center;
 }
 </style>

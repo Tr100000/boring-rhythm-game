@@ -1,6 +1,8 @@
 import * as Tone from "tone";
 import { beatSoundPlayer } from "./sounds";
 
+export const phraseCount = 6;
+
 export class PhraseData {
   notes!: Note[];
   svg!: string;

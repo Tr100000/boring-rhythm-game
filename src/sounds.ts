@@ -1,10 +1,11 @@
 import * as Tone from "tone";
 import { loadedAudio, loadedPhrases } from "./load";
+import { clap } from "./timing";
 
 let metronomeHigh: Tone.Player;
 let metronomeLow: Tone.Player;
 export function setupMetronome() {
-  const metronomeVolume = -5;
+  const metronomeVolume = -4;
 
   metronomeHigh = new Tone.Player({
     url: loadedAudio.get("metronome_high"),
@@ -37,10 +38,10 @@ export let clapSoundPlayer: SoundPlayer;
 export function setupClap() {
   clapSoundPlayer = new SoundPlayer(loadedAudio.get("clap"));
 
-  document.addEventListener("pointerdown", () => clapSoundPlayer.play());
+  document.addEventListener("pointerdown", () => clap());
   document.addEventListener("keydown", (e) => {
     if (!(e.repeat || e.altKey || e.ctrlKey || e.shiftKey || e.metaKey)) {
-      clapSoundPlayer.play();
+      clap();
     }
   });
 }

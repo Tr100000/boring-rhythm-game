@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import * as Tone from "tone";
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { loadedPhrases } from "../load";
 import { schedulePhrase, setupBeat, setupMetronome } from "../sounds";
+import Phrase from "./Phrase.vue";
 
-const currentPhrase = ref(1);
-const phraseSvg = computed(() => loadedPhrases[currentPhrase.value].svg);
-const phrase = ref<HTMLDivElement>();
+const currentPhrase = ref(0);
+const phrase = ref<InstanceType<typeof Phrase>>();
 
 setupMetronome();
 setupBeat();
@@ -46,6 +46,7 @@ function switchPhrase(index: number) {
     Tone.getTransport().state != "started"
   ) {
     currentPhrase.value = index;
+    phrase.value!.setInnerHTML(loadedPhrases[index].svg);
   }
 }
 
@@ -58,36 +59,22 @@ function noteHighlightCallback(noteIndex: number, highlight: boolean) {
     note.classList.remove("highlighted-note");
   }
 }
+
+onMounted(() => {
+  setTimeout(() => switchPhrase(1), 1);
+});
 </script>
 
 <template>
-  <div id="phrase" ref="phrase" v-html="phraseSvg"></div>
+  <Phrase ref="phrase" />
   <p>{{ currentPhrase }}</p>
 </template>
 
 <style scoped>
-#phrase {
-  width: 80vw;
-  max-width: 100%;
-  height: 80vh;
-  max-height: 100%;
-}
-
-div {
-  fill: var(--color);
-}
-
 p {
   position: absolute;
   top: 0;
   left: 0;
   margin: 8px;
-}
-</style>
-
-<style>
-.highlighted-note {
-  fill: blue;
-  color: blue;
 }
 </style>
