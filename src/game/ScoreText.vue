@@ -1,20 +1,20 @@
 <script setup lang="ts">
+import { DataType } from "csstype";
 import { onMounted, ref } from "vue";
 
 defineProps<{
   text: string;
+  color: DataType.Color;
 }>();
 
 const element = ref<HTMLParagraphElement>();
 
 onMounted(() => {
-  setTimeout(() => {
-    element.value!.classList.add("fading");
-  }, 1);
+  setTimeout(() => element.value!.classList.add("fading"), 1);
 });
 </script>
 <template>
-  <p ref="element">{{ text }}</p>
+  <p ref="element" :style="`color: ${color}`">{{ text }}</p>
 </template>
 
 <style scoped>

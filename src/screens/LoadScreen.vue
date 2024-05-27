@@ -92,9 +92,4 @@ function reload() {
     background-color: red;
   }
 }
-@media (prefers-color-scheme: light) {
-  #progressInner.progress-success {
-    background-color: limegreen;
-  }
-}
 </style>

@@ -1,7 +1,8 @@
+import { DataType } from "csstype";
 import * as Tone from "tone";
+import { ref } from "vue";
 import { loadedPhrases } from "./load";
 import { clapSoundPlayer } from "./sounds";
-import { ref } from "vue";
 
 export const perfectTime = 0.1;
 export const perfectScore = 100;
@@ -11,8 +12,13 @@ export const okTime = 0.25;
 export const okScore = 25;
 export const missScore = -50;
 
+export const perfectText: Text = { text: "Perfect!", color: "gold" };
+export const goodText: Text = { text: "Good", color: "lime" };
+export const okText: Text = { text: "OK", color: "turquoise" };
+export const missText: Text = { text: "Miss!", color: "red" };
+
 export let notes: NoteTiming[] = [];
-export let text = ref<string[]>([]);
+export let displayedText = ref<Text[]>([]);
 export let score = 0;
 
 export function clap() {
@@ -31,23 +37,27 @@ export function clap() {
     note.done = true;
 
     if (Math.abs(timeOffset) < perfectTime) {
-      text.value.push("Perfect!");
+      addText(perfectText);
       score += perfectScore;
     } else if (Math.abs(timeOffset) < goodTime) {
-      text.value.push("Good");
+      addText(goodText);
       score += goodScore;
     } else if (Math.abs(timeOffset) < okTime) {
-      text.value.push("OK");
+      addText(okText);
       score += okScore;
     } else {
-      text.value.push("Miss!");
+      addText(missText);
       score += missScore;
       note.done = false;
     }
   } else {
-    text.value.push("Miss!");
+    addText(missText);
     score += missScore;
   }
+}
+
+export function addText(text: Text) {
+  displayedText.value.push(text);
 }
 
 export function initTiming() {
@@ -67,4 +77,9 @@ export function getCurrentTime() {
 export type NoteTiming = {
   time: number;
   done: boolean;
+};
+
+export type Text = {
+  text: string;
+  color: DataType.Color;
 };

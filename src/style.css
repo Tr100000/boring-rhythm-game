@@ -1,14 +1,14 @@
 :root {
   --background: #242424;
   --color: #e1e1e1;
-  --note-highlight-color: #22f;
+  --note-highlight-color: #44e;
 
   font-family: "Roboto", sans-serif;
   line-height: 1.5;
   font-weight: 400;
   font-style: normal;
 
-  color-scheme: light dark;
+  color-scheme: only dark;
   color: var(--color);
   background-color: var(--background);
 
@@ -94,18 +94,5 @@ dialog {
     &::backdrop {
       background-color: rgb(0 0 0 / 0%);
     }
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --color: #213547;
-    --background: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
   }
 }

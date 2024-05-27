@@ -7,7 +7,7 @@ import {
   setupClap,
   setupMetronome,
 } from "../sounds";
-import { initTiming, score, text } from "../timing";
+import { initTiming, score, displayedText } from "../timing";
 import Phrase from "./Phrase.vue";
 import ScoreText from "./ScoreText.vue";
 
@@ -55,7 +55,7 @@ function noteHighlightCallback(noteIndex: number, highlight: boolean) {
 <template>
   <Phrase ref="phrase" />
   <div id="text">
-    <ScoreText v-for="t in text" :text="t" />
+    <ScoreText v-for="t in displayedText" :text="t.text" :color="t.color" />
   </div>
   <dialog ref="scoreDialog">
     <p>Score: {{ score }}</p>
