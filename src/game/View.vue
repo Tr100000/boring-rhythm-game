@@ -12,6 +12,13 @@ setupMetronome();
 setupBeat();
 
 onMounted(() => {
+  console.log(
+    loadedPhrases.reduce(
+      (accumulator, phrase) => accumulator + phrase.notes.length,
+      0,
+    ),
+  );
+
   document.addEventListener("keydown", (e) => {
     if (e.key == "ArrowLeft") {
       switchPhrase(currentPhrase.value - 1);

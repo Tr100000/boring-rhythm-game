@@ -76,6 +76,7 @@ export function loadAudio(
       new Tone.ToneAudioBuffer(processUrl(url), (buffer) => {
         loadedAudio.set(name, buffer);
         resolve(buffer);
+        console.log(`Loaded ${name} sound from ${url}`);
       });
     }),
   );
@@ -128,9 +129,11 @@ export function loadAllPhrases(): LoadTask<string>[] {
             return { start: note.start / 2, end: note.end / 2 };
           }
         });
+        console.log(`Loaded phrase ${i} playback data`);
       }),
       fileLoadTaskWithProcessing(`/phrases/${i}.svg`, (value) => {
         loadedPhrases[i].svg = value;
+        console.log(`Loaded phrase ${i} image data`);
       }),
     );
   }
