@@ -9,7 +9,6 @@ import {
 } from "../sounds";
 import { initTiming, score, displayedText } from "../timing";
 import Phrase from "./Phrase.vue";
-import ScoreText from "./ScoreText.vue";
 
 const audioStarted = ref<boolean>(false);
 const phrase = ref<InstanceType<typeof Phrase>>();
@@ -55,7 +54,7 @@ function noteHighlightCallback(noteIndex: number, highlight: boolean) {
 <template>
   <Phrase ref="phrase" />
   <div id="text">
-    <ScoreText v-for="t in displayedText" :text="t.text" :color="t.color" />
+    <p v-for="t in displayedText" :class="t.class">{{ t.text }}</p>
   </div>
   <dialog ref="scoreDialog">
     <p>Score: {{ score }}</p>
@@ -68,5 +67,33 @@ function noteHighlightCallback(noteIndex: number, highlight: boolean) {
   transform: translateY(-80px);
   display: flex;
   justify-content: center;
+
+  p {
+    position: absolute;
+    text-align: center;
+    font-size: 2em;
+    bottom: 0;
+    animation: 500ms linear 0s forwards fade;
+
+    &.perfect {
+      color: gold;
+    }
+    &.good {
+      color: lime;
+    }
+    &.ok {
+      color: turquoise;
+    }
+    &.miss {
+      color: red;
+    }
+  }
+}
+
+@keyframes fade {
+  to {
+    transform: translateY(-40px);
+    filter: opacity(0);
+  }
 }
 </style>

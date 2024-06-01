@@ -1,1 +1,1 @@
-# Rhythm Game Thing
+# Boring Rhythm Game

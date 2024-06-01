@@ -17,11 +17,15 @@ export function setupMetronome() {
   metronomeLow.volume.value = metronomeVolume;
 }
 
-export function scheduleMetronome(time: Tone.Unit.Time, count = 4) {
+export function scheduleMetronome(
+  time: Tone.Unit.Time,
+  measures = 1,
+  timeSignature = [4, 4],
+) {
   Tone.getTransport().schedule((time) => {
-    for (let i = 0; i < count; i++) {
-      (!(i % 4) ? metronomeHigh : metronomeLow).start(
-        time + Tone.Time("4n").valueOf() * i,
+    for (let i = 0; i < timeSignature[0] * measures; i++) {
+      (!(i % timeSignature[0]) ? metronomeHigh : metronomeLow).start(
+        time + Tone.Time(`${timeSignature[1]}n`).valueOf() * i,
       );
     }
   }, time);
@@ -68,7 +72,7 @@ export function schedulePhrase(
 
   phrase.scheduleNotes(time);
   phrase.scheduleNoteHighlights(time, noteHighlightDomCallback);
-  scheduleMetronome(time, 4 * (+scheduleRepeat + 1));
+  scheduleMetronome(time, 1 + +scheduleRepeat);
   Tone.getTransport().schedule((time) => {
     Tone.getDraw().schedule(() => domCallback(phrase.svg), time);
   }, time);

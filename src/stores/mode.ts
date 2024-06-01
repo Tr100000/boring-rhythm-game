@@ -11,4 +11,4 @@ export const useModeStore = defineStore("mode", () => {
   return { currentMode, setMode };
 });
 
-export type Mode = "menu" | "play" | "view";
+export type Mode = "menu" | "play" | "debug";

@@ -7,7 +7,7 @@ const modeStore = useModeStore();
 
 async function load(e: MouseEvent) {
   screenStore.setScreen("load");
-  modeStore.setMode(e.shiftKey && e.metaKey ? "view" : "play");
+  modeStore.setMode(e.shiftKey && e.metaKey ? "debug" : "play");
 }
 </script>
 

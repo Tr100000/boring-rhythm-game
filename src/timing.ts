@@ -1,4 +1,3 @@
-import { DataType } from "csstype";
 import * as Tone from "tone";
 import { ref } from "vue";
 import { loadedPhrases } from "./load";
@@ -12,10 +11,10 @@ export const okTime = 0.25;
 export const okScore = 25;
 export const missScore = -50;
 
-export const perfectText: Text = { text: "Perfect!", color: "gold" };
-export const goodText: Text = { text: "Good", color: "lime" };
-export const okText: Text = { text: "OK", color: "turquoise" };
-export const missText: Text = { text: "Miss!", color: "red" };
+export const perfectText: Text = { text: "Perfect!", class: "perfect" };
+export const goodText: Text = { text: "Good", class: "good" };
+export const okText: Text = { text: "OK", class: "ok" };
+export const missText: Text = { text: "Miss!", class: "miss" };
 
 export let notes: NoteTiming[] = [];
 export let displayedText = ref<Text[]>([]);
@@ -81,5 +80,5 @@ export type NoteTiming = {
 
 export type Text = {
   text: string;
-  color: DataType.Color;
+  class: string;
 };

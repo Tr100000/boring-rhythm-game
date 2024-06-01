@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import Debug from "./game/Debug.vue";
 import Game from "./game/Game.vue";
-import View from "./game/View.vue";
 import LoadScreen from "./screens/LoadScreen.vue";
 import MainMenu from "./screens/MainMenu.vue";
 import { useModeStore } from "./stores/mode";
@@ -18,9 +18,9 @@ const modeStore = useModeStore();
       screenStore.currentScreen == 'game' && modeStore.currentMode == 'play'
     "
   />
-  <View
+  <Debug
     v-if="
-      screenStore.currentScreen == 'game' && modeStore.currentMode == 'view'
+      screenStore.currentScreen == 'game' && modeStore.currentMode == 'debug'
     "
   />
 </template>
