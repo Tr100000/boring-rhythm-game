@@ -14,6 +14,8 @@ const currentState = computed(() => {
   if (!tasks.value) return "waiting";
   if (tasks.value.every((task) => task.status == "success")) {
     return "success";
+  } else if (tasks.value.some((task) => task.status == "error")) {
+    return "error";
   } else {
     return "waiting";
   }
