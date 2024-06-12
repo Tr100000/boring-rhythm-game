@@ -147,10 +147,10 @@ export function createLoadTasks(
   try {
     const tasks: LoadTask<any>[] = [
       new GroupLoadTask([
-        loadAudio("/audio/metronome_high.ogg", "metronome_high"),
-        loadAudio("/audio/metronome_low.ogg", "metronome_low"),
+        loadAudio("/audio/metronome_high.mp3", "metronome_high"),
+        loadAudio("/audio/metronome_low.mp3", "metronome_low"),
         loadAudio("https://tonejs.github.io/audio/berklee/conga_4.mp3", "beat"),
-        loadAudio("/audio/clap.ogg", "clap"),
+        loadAudio("/audio/clap.mp3", "clap"),
       ]),
       new GroupLoadTask(loadAllPhrases()),
       new LoadTask(Tone.start()),
