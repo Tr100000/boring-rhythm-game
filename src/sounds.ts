@@ -1,11 +1,12 @@
 import * as Tone from "tone";
-import { loadedAudio, loadedPhrases } from "./load";
+import { loadedAudio, loadedPhrasesForCurrent } from "./load";
+import { PhraseData } from "./phrase";
 import { clap } from "./timing";
 
 let metronomeHigh: Tone.Player;
 let metronomeLow: Tone.Player;
 export function setupMetronome() {
-  const metronomeVolume = -4;
+  const metronomeVolume = -8;
 
   metronomeHigh = new Tone.Player({
     url: loadedAudio.get("metronome_high"),
@@ -54,28 +55,35 @@ export function scheduleAllPhrases(
   domCallback: (svg: string) => void,
   noteHighlightDomCallback: (noteIndex: number, highlight: boolean) => void,
 ) {
-  loadedPhrases.forEach((_phrase, i) => {
-    const time = `${(i - 1) * 2}:0`;
-    schedulePhrase(i, time, domCallback, noteHighlightDomCallback);
-  });
-  domCallback(loadedPhrases[1].svg);
+  let time = 0;
+  for (let i = 1; i < loadedPhrasesForCurrent().length; i++) {
+    const phrase = loadedPhrasesForCurrent()[i];
+    schedulePhrase(phrase, `${time}:0`, domCallback, noteHighlightDomCallback);
+    time += phrase.measures * 2;
+  }
+  domCallback(loadedPhrasesForCurrent()[1].svg);
 }
 
 export function schedulePhrase(
-  index: number,
+  phrase: PhraseData,
   time: Tone.Unit.Time,
   domCallback: (svg: string) => void,
   noteHighlightDomCallback: (noteIndex: number, highlight: boolean) => void,
   scheduleRepeat = true,
 ) {
-  const phrase = loadedPhrases[index];
-
   phrase.scheduleNotes(time);
   phrase.scheduleNoteHighlights(time, noteHighlightDomCallback);
-  scheduleMetronome(time, 1 + +scheduleRepeat);
+  scheduleMetronome(time, (1 + +scheduleRepeat) * phrase.measures);
   Tone.getTransport().schedule((time) => {
     Tone.getDraw().schedule(() => domCallback(phrase.svg), time);
   }, time);
+}
+
+export function getTotalPhraseLength() {
+  return loadedPhrasesForCurrent().reduce(
+    (accumulator, phrase) => accumulator + phrase.measures,
+    0,
+  );
 }
 
 class SoundPlayer {

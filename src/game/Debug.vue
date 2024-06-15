@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import * as Tone from "tone";
 import { onMounted, ref } from "vue";
-import { loadedPhrases } from "../load";
+import { loadedPhrasesForCurrent } from "../load";
 import { schedulePhrase, setupBeat, setupMetronome } from "../sounds";
 import Phrase from "./Phrase.vue";
 
@@ -13,7 +13,7 @@ setupBeat();
 
 onMounted(() => {
   console.log(
-    loadedPhrases.reduce(
+    loadedPhrasesForCurrent().reduce(
       (accumulator, phrase) => accumulator + phrase.notes.length,
       0,
     ),
@@ -26,7 +26,7 @@ onMounted(() => {
       switchPhrase(currentPhrase.value + 1);
     } else if (e.key == " " && Tone.getTransport().state != "started") {
       schedulePhrase(
-        currentPhrase.value,
+        loadedPhrasesForCurrent()[currentPhrase.value],
         0,
         () => {},
         noteHighlightCallback,
@@ -36,7 +36,7 @@ onMounted(() => {
       Tone.getTransport().schedule((time) => {
         Tone.getTransport().stop(time);
         Tone.getTransport().cancel();
-      }, "1:0");
+      }, `${loadedPhrasesForCurrent()[currentPhrase.value].measures}:0`);
     } else {
       const num = Number.parseInt(e.key);
       if (num) {
@@ -49,17 +49,21 @@ onMounted(() => {
 function switchPhrase(index: number) {
   if (
     index >= 1 &&
-    index < loadedPhrases.length &&
+    index < loadedPhrasesForCurrent().length &&
     Tone.getTransport().state != "started"
   ) {
     currentPhrase.value = index;
-    phrase.value!.setInnerHTML(loadedPhrases[index].svg);
+    phrase.value!.setInnerHTML(loadedPhrasesForCurrent()[index].svg);
   }
 }
 
 function noteHighlightCallback(noteIndex: number, highlight: boolean) {
   const notes = phrase.value!.querySelectorAll(".Note");
   const note = notes[noteIndex];
+  if (!note) {
+    console.warn("No note found for highlighting!");
+    return;
+  }
   if (highlight) {
     note.classList.add("highlighted-note");
   } else {

@@ -2,13 +2,17 @@
 import * as Tone from "tone";
 import { onMounted, ref } from "vue";
 import {
+  getTotalPhraseLength,
   scheduleAllPhrases,
   setupBeat,
   setupClap,
   setupMetronome,
 } from "../sounds";
-import { initTiming, score, displayedText } from "../timing";
+import { initTiming, displayedText } from "../timing";
 import Phrase from "./Phrase.vue";
+import { useGameStore } from "../stores/game";
+
+const gameStore = useGameStore();
 
 const audioStarted = ref<boolean>(false);
 const phrase = ref<InstanceType<typeof Phrase>>();
@@ -25,11 +29,14 @@ function start() {
   Tone.getTransport().start("+0.1");
   audioStarted.value = true;
 
-  Tone.getTransport().schedule((time) => {
-    Tone.getDraw().schedule(() => {
-      scoreDialog.value!.showModal();
-    }, time);
-  }, "12:2");
+  Tone.getTransport().schedule(
+    (time) => {
+      Tone.getDraw().schedule(() => {
+        scoreDialog.value!.showModal();
+      }, time);
+    },
+    `${getTotalPhraseLength() * 2}:1`,
+  );
 }
 
 onMounted(() => {
@@ -43,6 +50,10 @@ function phraseChangeCallback(value: string) {
 function noteHighlightCallback(noteIndex: number, highlight: boolean) {
   const notes = phrase.value!.querySelectorAll(".Note");
   const note = notes[noteIndex];
+  if (!note) {
+    console.warn("No note found for highlighting!");
+    return;
+  }
   if (highlight) {
     note.classList.add("highlighted-note");
   } else {
@@ -57,7 +68,7 @@ function noteHighlightCallback(noteIndex: number, highlight: boolean) {
     <p v-for="t in displayedText" :class="t.class">{{ t.text }}</p>
   </div>
   <dialog ref="scoreDialog">
-    <p>Score: {{ score }}</p>
+    <p>Score: {{ gameStore.score }}</p>
   </dialog>
 </template>
 

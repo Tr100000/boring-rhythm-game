@@ -1,11 +1,10 @@
 import * as Tone from "tone";
 import { beatSoundPlayer } from "./sounds";
 
-export const phraseCount = 6;
-
 export class PhraseData {
-  notes!: Note[];
-  svg!: string;
+  measures: number = 1;
+  notes: Note[] = [];
+  svg: string = "";
 
   scheduleNotes(time: Tone.Unit.Time) {
     Tone.getTransport().schedule((time) => {
@@ -33,6 +32,7 @@ export class PhraseData {
 }
 
 export class PhraseJson {
+  measures!: number;
   timeSignature?: number[];
   notes!: (Note | number)[];
 }

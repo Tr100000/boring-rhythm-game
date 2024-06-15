@@ -1,7 +1,8 @@
 import * as Tone from "tone";
 import { ref } from "vue";
-import { loadedPhrases } from "./load";
+import { loadedPhrasesForCurrent } from "./load";
 import { clapSoundPlayer } from "./sounds";
+import { useGameStore } from "./stores/game";
 
 export const perfectTime = 0.1;
 export const perfectScore = 100;
@@ -18,7 +19,6 @@ export const missText: Text = { text: "Miss!", class: "miss" };
 
 export let notes: NoteTiming[] = [];
 export let displayedText = ref<Text[]>([]);
-export let score = 0;
 
 export function clap() {
   clapSoundPlayer.play();
@@ -31,27 +31,30 @@ export function clap() {
     .at(0);
   const note = prevNote?.done ? nextNote : prevNote;
 
+  const gameStore = useGameStore();
+
   if (note) {
-    const timeOffset = getCurrentTime().valueOf() - note.time;
+    const timeOffset = currentTime - note.time;
+    console.log(timeOffset);
     note.done = true;
 
     if (Math.abs(timeOffset) < perfectTime) {
       addText(perfectText);
-      score += perfectScore;
+      gameStore.addScore(perfectScore);
     } else if (Math.abs(timeOffset) < goodTime) {
       addText(goodText);
-      score += goodScore;
+      gameStore.addScore(goodScore);
     } else if (Math.abs(timeOffset) < okTime) {
       addText(okText);
-      score += okScore;
+      gameStore.addScore(okScore);
     } else {
       addText(missText);
-      score += missScore;
+      gameStore.addScore(missScore);
       note.done = false;
     }
   } else {
     addText(missText);
-    score += missScore;
+    gameStore.addScore(missScore);
   }
 }
 
@@ -60,13 +63,18 @@ export function addText(text: Text) {
 }
 
 export function initTiming() {
-  loadedPhrases.forEach((phrase, index) => {
+  const currentLoadedPhrases = loadedPhrasesForCurrent();
+  let time = 0;
+  for (let i = 1; i < currentLoadedPhrases.length; i++) {
+    const phrase = currentLoadedPhrases[i];
+    time += phrase.measures * 2;
     notes.push(
       ...phrase.notes.map((note) => {
-        return { time: note.start + index * 4 - 2, done: false } as NoteTiming;
+        return { time: time + note.start, done: false } as NoteTiming;
       }),
     );
-  });
+    time += phrase.measures * 2;
+  }
 }
 
 export function getCurrentTime() {

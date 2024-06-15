@@ -1,9 +1,12 @@
 import * as Tone from "tone";
 import { ref } from "vue";
-import { Note, PhraseData, PhraseJson, phraseCount } from "./phrase";
+import { Note, PhraseData, PhraseJson } from "./phrase";
+import { GameMode, useGameStore } from "./stores/game";
 
 export const loadedAudio = new Map<string, Tone.ToneAudioBuffer>();
-export const loadedPhrases: PhraseData[] = [];
+export const loadedPhrases = new Map<GameMode, PhraseData[]>();
+loadedPhrases.set("easy", []);
+loadedPhrases.set("impossible", []);
 
 export class LoadTask<T> implements PromiseLike<T> {
   status = ref<"waiting" | "success" | "error">("waiting");
@@ -54,9 +57,10 @@ export class GroupLoadTask<T> extends LoadTask<T[]> {
   }
 
   public getProgressValue(): number {
-    return (
-      this.childTasks.filter((task) => task.status.value == "success").length /
-      this.childTasks.length
+    return this.childTasks.reduce(
+      (accumulator, task) =>
+        accumulator + task.getProgressValue() / this.childTasks.length,
+      0,
     );
   }
 }
@@ -107,34 +111,43 @@ export function fileLoadTaskWithProcessing(
 }
 
 export function loadAllPhrases(): LoadTask<string>[] {
+  const gameStore = useGameStore();
   const tasks: LoadTask<string>[] = [];
-  for (let i = 1; i <= phraseCount; i++) {
-    loadedPhrases[i] = new PhraseData();
+  for (let i = 1; i <= gameStore.getPhraseCount(); i++) {
+    loadedPhrasesForCurrent()[i] = new PhraseData();
     tasks.push(
-      fileLoadTaskWithProcessing(`/phrases/${i}.json`, (value) => {
-        const json = JSON.parse(value) as PhraseJson;
-        const getNoteStart = (note: Note | number) => {
-          return typeof note === "number" ? note : note.start;
-        };
-        loadedPhrases[i].notes = json.notes.map((note, index, array) => {
-          if (typeof note === "number") {
-            return {
-              start: note / 2,
-              end:
-                index < array.length - 1
-                  ? getNoteStart(array[index + 1]) / 2
-                  : 2,
-            };
-          } else {
-            return { start: note.start / 2, end: note.end / 2 };
-          }
-        });
-        console.log(`Loaded phrase ${i} playback data`);
-      }),
-      fileLoadTaskWithProcessing(`/phrases/${i}.svg`, (value) => {
-        loadedPhrases[i].svg = value;
-        console.log(`Loaded phrase ${i} image data`);
-      }),
+      fileLoadTaskWithProcessing(
+        `/phrases/${gameStore.mode}/${i}.json`,
+        (value) => {
+          const json = JSON.parse(value) as PhraseJson;
+          const getNoteStart = (note: Note | number) => {
+            return typeof note === "number" ? note : note.start;
+          };
+          const phrase = loadedPhrasesForCurrent()[i];
+          phrase.measures = json.measures;
+          phrase.notes = json.notes.map((note, index, array) => {
+            if (typeof note === "number") {
+              return {
+                start: note / 2,
+                end:
+                  index < array.length - 1
+                    ? getNoteStart(array[index + 1]) / 2
+                    : 2,
+              };
+            } else {
+              return { start: note.start / 2, end: note.end / 2 };
+            }
+          });
+          console.log(`Loaded phrase ${i} playback data`);
+        },
+      ),
+      fileLoadTaskWithProcessing(
+        `/phrases/${gameStore.mode}/${i}.svg`,
+        (value) => {
+          loadedPhrasesForCurrent()[i].svg = value;
+          console.log(`Loaded phrase ${i} image data`);
+        },
+      ),
     );
   }
   return tasks;
@@ -164,4 +177,8 @@ export function createLoadTasks(
     }
     return [];
   }
+}
+
+export function loadedPhrasesForCurrent() {
+  return loadedPhrases.get(useGameStore().mode!)!;
 }

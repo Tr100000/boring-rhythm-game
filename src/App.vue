@@ -3,24 +3,16 @@ import Debug from "./game/Debug.vue";
 import Game from "./game/Game.vue";
 import LoadScreen from "./screens/LoadScreen.vue";
 import MainMenu from "./screens/MainMenu.vue";
-import { useModeStore } from "./stores/mode";
+import { useGameStore } from "./stores/game";
 import { useScreenStore } from "./stores/screen";
 
 const screenStore = useScreenStore();
-const modeStore = useModeStore();
+const gameStore = useGameStore();
 </script>
 
 <template>
   <MainMenu v-if="screenStore.currentScreen == 'menu'" />
   <LoadScreen v-if="screenStore.currentScreen == 'load'" />
-  <Game
-    v-if="
-      screenStore.currentScreen == 'game' && modeStore.currentMode == 'play'
-    "
-  />
-  <Debug
-    v-if="
-      screenStore.currentScreen == 'game' && modeStore.currentMode == 'debug'
-    "
-  />
+  <Game v-if="screenStore.currentScreen == 'game' && !gameStore.isDebug" />
+  <Debug v-if="screenStore.currentScreen == 'game' && gameStore.isDebug" />
 </template>
