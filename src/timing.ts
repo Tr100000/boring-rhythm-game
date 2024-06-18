@@ -35,7 +35,6 @@ export function clap() {
 
   if (note) {
     const timeOffset = currentTime - note.time;
-    console.log(timeOffset);
     note.done = true;
 
     if (Math.abs(timeOffset) < perfectTime) {

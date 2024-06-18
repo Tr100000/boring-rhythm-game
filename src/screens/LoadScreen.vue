@@ -28,7 +28,7 @@ const progress = computed(() => {
   );
 });
 const progressStyle = computed<StyleValue>(() => {
-  return { width: progress.value * 100 + "%" };
+  return { width: `${progress.value * 100}%` };
 });
 const progressClass = computed(() => `progress-${currentState.value}`);
 

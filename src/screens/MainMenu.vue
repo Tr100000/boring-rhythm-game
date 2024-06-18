@@ -18,7 +18,7 @@ async function load(mode: GameMode, e: MouseEvent) {
 <template>
   <div id="links">
     <a href="https://github.com/Tr100000/boring-rhythm-game">
-      <img alt="Source" src="/images/github-mark-white.svg" />
+      <img alt="Source" src="/images/github-mark.svg" />
     </a>
   </div>
   <div id="title" v-if="currentStep == 0">

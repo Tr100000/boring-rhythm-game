@@ -8,15 +8,12 @@ import {
   setupClap,
   setupMetronome,
 } from "../sounds";
-import { initTiming, displayedText } from "../timing";
+import { displayedText, initTiming } from "../timing";
 import Phrase from "./Phrase.vue";
-import { useGameStore } from "../stores/game";
-
-const gameStore = useGameStore();
+import { useScreenStore } from "../stores/screen";
 
 const audioStarted = ref<boolean>(false);
 const phrase = ref<InstanceType<typeof Phrase>>();
-const scoreDialog = ref<HTMLDialogElement>();
 
 function start() {
   setupMetronome();
@@ -32,7 +29,7 @@ function start() {
   Tone.getTransport().schedule(
     (time) => {
       Tone.getDraw().schedule(() => {
-        scoreDialog.value!.showModal();
+        useScreenStore().setScreen("results");
       }, time);
     },
     `${getTotalPhraseLength() * 2}:1`,
@@ -67,9 +64,6 @@ function noteHighlightCallback(noteIndex: number, highlight: boolean) {
   <div id="text">
     <p v-for="t in displayedText" :class="t.class">{{ t.text }}</p>
   </div>
-  <dialog ref="scoreDialog">
-    <p>Score: {{ gameStore.score }}</p>
-  </dialog>
 </template>
 
 <style scoped>

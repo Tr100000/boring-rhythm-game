@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { notes } from "../timing";
 
 export const useGameStore = defineStore("game", () => {
   const isDebug = ref(false);
@@ -21,7 +22,11 @@ export const useGameStore = defineStore("game", () => {
     score.value += add;
   }
 
-  return { isDebug, mode, score, getPhraseCount, addScore };
+  function getScorePercentage() {
+    return score.value / (notes.length * 100);
+  }
+
+  return { isDebug, mode, score, getPhraseCount, addScore, getScorePercentage };
 });
 
 export type GameMode = "easy" | "impossible";
