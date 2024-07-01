@@ -9,9 +9,11 @@ export const useGameStore = defineStore("game", () => {
 
   function getPhraseCount() {
     switch (mode.value) {
+      case "easy":
+        return 1;
       case "impossible":
         return 6;
-      case "easy":
+      case "birthday":
         return 1;
       default:
         return 0;
@@ -29,4 +31,4 @@ export const useGameStore = defineStore("game", () => {
   return { isDebug, mode, score, getPhraseCount, addScore, getScorePercentage };
 });
 
-export type GameMode = "easy" | "impossible";
+export type GameMode = "easy" | "impossible" | "birthday";

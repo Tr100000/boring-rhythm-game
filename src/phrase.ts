@@ -35,5 +35,14 @@ export class PhraseJson {
   measures!: number;
   timeSignature?: number[];
   notes!: (Note | number)[];
+  events?: PhraseEvent[];
 }
 export type Note = { start: number; end: number };
+export type PhraseEvent = TimeSignatureEvent;
+export type PhraseEventBase<T extends string> = {
+  type: T;
+  time: number | undefined;
+};
+export type TimeSignatureEvent = PhraseEventBase<"timeSignature"> & {
+  timeSignature: number[];
+};
