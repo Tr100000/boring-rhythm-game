@@ -4,19 +4,13 @@ import { GameMode, useGameStore } from "../stores/game";
 import { useScreenStore } from "../stores/screen";
 
 const currentStep = ref(0);
-const debugMode = ref(false);
 
 const screenStore = useScreenStore();
 const gameStore = useGameStore();
 
-function goToModeSelect(e: MouseEvent) {
-  debugMode.value = e.shiftKey && e.metaKey;
-  currentStep.value++;
-}
-
 function load(mode: GameMode, e: MouseEvent) {
   gameStore.mode = mode;
-  gameStore.isDebug = (e.shiftKey && e.metaKey) || mode == "birthday";
+  gameStore.isDebug = e.shiftKey && e.metaKey;
   screenStore.setScreen("load");
 }
 </script>
@@ -29,14 +23,11 @@ function load(mode: GameMode, e: MouseEvent) {
   </div>
   <div id="title" v-if="currentStep == 0">
     <h1>Boring Rhythm Game</h1>
-    <button @click="goToModeSelect">Play</button>
+    <button @click="currentStep++">Play</button>
   </div>
   <div id="mode-select" v-if="currentStep == 1">
     <button @click="(e) => load('easy', e)">Easy</button>
     <button @click="(e) => load('impossible', e)">Impossible</button>
-    <button @click="(e) => load('birthday', e)" v-if="debugMode">
-      Birthday
-    </button>
   </div>
 </template>
 

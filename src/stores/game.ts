@@ -13,8 +13,6 @@ export const useGameStore = defineStore("game", () => {
         return 1;
       case "impossible":
         return 6;
-      case "birthday":
-        return 1;
       default:
         return 0;
     }
@@ -31,4 +29,4 @@ export const useGameStore = defineStore("game", () => {
   return { isDebug, mode, score, getPhraseCount, addScore, getScorePercentage };
 });
 
-export type GameMode = "easy" | "impossible" | "birthday";
+export type GameMode = "easy" | "impossible";
