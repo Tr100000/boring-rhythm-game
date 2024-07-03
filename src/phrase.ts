@@ -12,20 +12,14 @@ export class PhraseData {
     }, time);
   }
 
-  scheduleNoteHighlights(
-    time: Tone.Unit.Time,
-    domCallback: (noteIndex: number, highlight: boolean) => void,
-  ) {
+  scheduleNoteHighlights(time: Tone.Unit.Time, domCallback: (noteIndex: number, highlight: boolean) => void) {
     Tone.getTransport().schedule((time) => {
       this.notes.forEach((note, i) => {
         Tone.getDraw().schedule(
           () => domCallback(this.notes.indexOf(note), true),
           time + note.start + Tone.Time(0.01).valueOf() * +!i,
         );
-        Tone.getDraw().schedule(
-          () => domCallback(this.notes.indexOf(note), false),
-          time + note.end,
-        );
+        Tone.getDraw().schedule(() => domCallback(this.notes.indexOf(note), false), time + note.end);
       });
     }, time);
   }

@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import * as Tone from "tone";
 import { onMounted, ref } from "vue";
-import {
-  getTotalPhraseLength,
-  scheduleAllPhrases,
-  setupBeat,
-  setupClap,
-  setupMetronome,
-} from "../sounds";
+import { getTotalPhraseLength, scheduleAllPhrases, setupBeat, setupClap, setupMetronome } from "../sounds";
 import { displayedText, initTiming } from "../timing";
 import Phrase from "./Phrase.vue";
 import { useScreenStore } from "../stores/screen";

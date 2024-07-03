@@ -54,7 +54,7 @@ requestAnimationFrame(update);
 #scoreInner {
   animation-name: inner;
   animation-timing-function: linear;
-  animation-delay: 1s;
+  animation-delay: 250ms;
   animation-fill-mode: both;
   background-color: #106ecc;
 }

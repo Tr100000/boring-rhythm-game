@@ -23,12 +23,8 @@ export let displayedText = ref<Text[]>([]);
 export function clap() {
   clapSoundPlayer.play();
   const currentTime = getCurrentTime().valueOf();
-  const prevNote = notes
-    .filter((note) => note.time < currentTime && !note.done)
-    .at(-1);
-  const nextNote = notes
-    .filter((note) => note.time > currentTime && !note.done)
-    .at(0);
+  const prevNote = notes.filter((note) => note.time < currentTime && !note.done).at(-1);
+  const nextNote = notes.filter((note) => note.time > currentTime && !note.done).at(0);
   const note = prevNote?.done ? nextNote : prevNote;
 
   const gameStore = useGameStore();

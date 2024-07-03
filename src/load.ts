@@ -29,14 +29,8 @@ export class LoadTask<T> implements PromiseLike<T> {
   }
 
   then<TResult1 = T, TResult2 = never>(
-    onfulfilled?:
-      | ((value: T) => TResult1 | PromiseLike<TResult1>)
-      | null
-      | undefined,
-    onrejected?:
-      | ((reason: any) => TResult2 | PromiseLike<TResult2>)
-      | null
-      | undefined,
+    onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null | undefined,
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null | undefined,
   ): PromiseLike<TResult1 | TResult2> {
     return this.promise.then(onfulfilled, onrejected);
   }
@@ -58,23 +52,17 @@ export class GroupLoadTask<T> extends LoadTask<T[]> {
 
   public getProgressValue(): number {
     return this.childTasks.reduce(
-      (accumulator, task) =>
-        accumulator + task.getProgressValue() / this.childTasks.length,
+      (accumulator, task) => accumulator + task.getProgressValue() / this.childTasks.length,
       0,
     );
   }
 }
 
 function processUrl(url: string) {
-  return URL.canParse(url) || import.meta.env.DEV
-    ? url
-    : "/boring-rhythm-game" + url;
+  return URL.canParse(url) || import.meta.env.DEV ? url : "/boring-rhythm-game" + url;
 }
 
-export function loadAudio(
-  url: string,
-  name: string,
-): LoadTask<Tone.ToneAudioBuffer> {
+export function loadAudio(url: string, name: string): LoadTask<Tone.ToneAudioBuffer> {
   return new LoadTask(
     new Promise((resolve) => {
       new Tone.ToneAudioBuffer(processUrl(url), (buffer) => {
@@ -94,10 +82,7 @@ export function fileLoadTask(url: string): LoadTask<string> {
   );
 }
 
-export function fileLoadTaskWithProcessing(
-  url: string,
-  processFunction: (value: string) => void,
-): LoadTask<string> {
+export function fileLoadTaskWithProcessing(url: string, processFunction: (value: string) => void): LoadTask<string> {
   return new LoadTask(
     new Promise((resolve) => {
       fetch(processUrl(url)).then((r) =>
@@ -116,47 +101,35 @@ export function loadAllPhrases(): LoadTask<string>[] {
   for (let i = 1; i <= gameStore.getPhraseCount(); i++) {
     loadedPhrasesForCurrent()[i] = new PhraseData();
     tasks.push(
-      fileLoadTaskWithProcessing(
-        `/phrases/${gameStore.mode}/${i}.json`,
-        (value) => {
-          const json = JSON.parse(value) as PhraseJson;
-          const getNoteStart = (note: Note | number) => {
-            return typeof note === "number" ? note : note.start;
-          };
-          const phrase = loadedPhrasesForCurrent()[i];
-          phrase.measures = json.measures;
-          phrase.notes = json.notes.map((note, index, array) => {
-            if (typeof note === "number") {
-              return {
-                start: note / 2,
-                end:
-                  index < array.length - 1
-                    ? getNoteStart(array[index + 1]) / 2
-                    : 2,
-              };
-            } else {
-              return { start: note.start / 2, end: note.end / 2 };
-            }
-          });
-          console.log(`Loaded phrase ${i} playback data`);
-        },
-      ),
-      fileLoadTaskWithProcessing(
-        `/phrases/${gameStore.mode}/${i}.svg`,
-        (value) => {
-          loadedPhrasesForCurrent()[i].svg = value;
-          console.log(`Loaded phrase ${i} image data`);
-        },
-      ),
+      fileLoadTaskWithProcessing(`/phrases/${gameStore.mode}/${i}.json`, (value) => {
+        const json = JSON.parse(value) as PhraseJson;
+        const getNoteStart = (note: Note | number) => {
+          return typeof note === "number" ? note : note.start;
+        };
+        const phrase = loadedPhrasesForCurrent()[i];
+        phrase.measures = json.measures;
+        phrase.notes = json.notes.map((note, index, array) => {
+          if (typeof note === "number") {
+            return {
+              start: note / 2,
+              end: index < array.length - 1 ? getNoteStart(array[index + 1]) / 2 : 2,
+            };
+          } else {
+            return { start: note.start / 2, end: note.end / 2 };
+          }
+        });
+        console.log(`Loaded phrase ${i} playback data`);
+      }),
+      fileLoadTaskWithProcessing(`/phrases/${gameStore.mode}/${i}.svg`, (value) => {
+        loadedPhrasesForCurrent()[i].svg = value;
+        console.log(`Loaded phrase ${i} image data`);
+      }),
     );
   }
   return tasks;
 }
 
-export function createLoadTasks(
-  onLoadFinished?: (value: any[]) => void,
-  onLoadError?: (reason: any) => void,
-) {
+export function createLoadTasks(onLoadFinished?: (value: any[]) => void, onLoadError?: (reason: any) => void) {
   try {
     const tasks: LoadTask<any>[] = [
       new GroupLoadTask([

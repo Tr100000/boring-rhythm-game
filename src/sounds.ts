@@ -18,11 +18,7 @@ export function setupMetronome() {
   metronomeLow.volume.value = metronomeVolume;
 }
 
-export function scheduleMetronome(
-  time: Tone.Unit.Time,
-  measures = 1,
-  timeSignature = [4, 4],
-) {
+export function scheduleMetronome(time: Tone.Unit.Time, measures = 1, timeSignature = [4, 4]) {
   Tone.getTransport().schedule((time) => {
     for (let i = 0; i < timeSignature[0] * measures; i++) {
       (!(i % timeSignature[0]) ? metronomeHigh : metronomeLow).start(
@@ -80,10 +76,7 @@ export function schedulePhrase(
 }
 
 export function getTotalPhraseLength() {
-  return loadedPhrasesForCurrent().reduce(
-    (accumulator, phrase) => accumulator + phrase.measures,
-    0,
-  );
+  return loadedPhrasesForCurrent().reduce((accumulator, phrase) => accumulator + phrase.measures, 0);
 }
 
 class SoundPlayer {
@@ -95,9 +88,7 @@ class SoundPlayer {
   }
 
   play() {
-    const availablePlayers = this.players.filter(
-      (player) => player.state == "stopped",
-    );
+    const availablePlayers = this.players.filter((player) => player.state == "stopped");
     if (availablePlayers.length == 0) {
       availablePlayers.push(this.addPlayer());
     }

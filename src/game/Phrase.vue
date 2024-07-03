@@ -7,9 +7,7 @@ function setInnerHTML(value: string) {
   phrase.value!.innerHTML = value;
 }
 
-function querySelectorAll(
-  selector: keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap | string,
-) {
+function querySelectorAll(selector: keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap | string) {
   return phrase.value!.querySelectorAll(selector);
 }
 

@@ -4,9 +4,7 @@ import { LoadTask, createLoadTasks } from "../load";
 import { useScreenStore } from "../stores/screen";
 
 const screenStore = useScreenStore();
-const tasks = ref<LoadTask<any>[]>(
-  createLoadTasks(onLoadFinished, onLoadError),
-);
+const tasks = ref<LoadTask<any>[]>(createLoadTasks(onLoadFinished, onLoadError));
 const startTime = ref<number>(Date.now());
 const errorDialog = ref<HTMLDialogElement>();
 
@@ -22,10 +20,7 @@ const currentState = computed(() => {
 });
 const progress = computed(() => {
   if (!tasks.value) return 0;
-  return (
-    tasks.value.filter((task) => task.status == "success").length /
-    tasks.value.length
-  );
+  return tasks.value.filter((task) => task.status == "success").length / tasks.value.length;
 });
 const progressStyle = computed<StyleValue>(() => {
   return { width: `${progress.value * 100}%` };
@@ -54,11 +49,7 @@ function reload() {
 <template>
   <div id="root">
     <div id="progress">
-      <div
-        id="progressInner"
-        :style="progressStyle"
-        :class="progressClass"
-      ></div>
+      <div id="progressInner" :style="progressStyle" :class="progressClass"></div>
     </div>
     <dialog ref="errorDialog">
       <p></p>

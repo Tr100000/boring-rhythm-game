@@ -12,12 +12,7 @@ setupMetronome();
 setupBeat();
 
 onMounted(() => {
-  console.log(
-    loadedPhrasesForCurrent().reduce(
-      (accumulator, phrase) => accumulator + phrase.notes.length,
-      0,
-    ),
-  );
+  console.log(loadedPhrasesForCurrent().reduce((accumulator, phrase) => accumulator + phrase.notes.length, 0));
 
   document.addEventListener("keydown", (e) => {
     if (e.key == "ArrowLeft") {
@@ -25,13 +20,7 @@ onMounted(() => {
     } else if (e.key == "ArrowRight") {
       switchPhrase(currentPhrase.value + 1);
     } else if (e.key == " " && Tone.getTransport().state != "started") {
-      schedulePhrase(
-        loadedPhrasesForCurrent()[currentPhrase.value],
-        0,
-        () => {},
-        noteHighlightCallback,
-        false,
-      );
+      schedulePhrase(loadedPhrasesForCurrent()[currentPhrase.value], 0, () => {}, noteHighlightCallback, false);
       Tone.getTransport().start("+0.1", 0);
       Tone.getTransport().schedule((time) => {
         Tone.getTransport().stop(time);
@@ -47,11 +36,7 @@ onMounted(() => {
 });
 
 function switchPhrase(index: number) {
-  if (
-    index >= 1 &&
-    index < loadedPhrasesForCurrent().length &&
-    Tone.getTransport().state != "started"
-  ) {
+  if (index >= 1 && index < loadedPhrasesForCurrent().length && Tone.getTransport().state != "started") {
     currentPhrase.value = index;
     phrase.value!.setInnerHTML(loadedPhrasesForCurrent()[index].svg);
   }
