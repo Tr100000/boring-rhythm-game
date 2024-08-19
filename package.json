@@ -10,7 +10,7 @@
     "test": "prettier . --check"
   },
   "dependencies": {
-    "pinia": "^2.2.1",
+    "pinia": "^2.2.2",
     "tone": "^15.0.4",
     "vue": "^3.4.37"
   },
